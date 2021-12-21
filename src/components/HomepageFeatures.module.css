@@ -1,0 +1,15 @@
+.features {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  padding: 2rem 0;
+  column-count: 4;
+  column-span: all;
+  width: 100%;
+}
+
+.featureSvg {
+  height: 200px;
+  width: 200px;
+  padding: 0;
+}
