@@ -3,7 +3,7 @@ id: dynamics
 title: Dynamics tutorial
 ---
 
-Having learned the basics of ANA Static and ANA Dynamics in the [**quickstart**](docs/quickstart.html),
+Having learned the basics of ANA Static and ANA Dynamics in the [**quickstart**](/docs/quickstart.html),
 we now turn our attention to a few other details and options you might find useful.
 As before, you can get all files used in this example [**here**](https://github.com/anadynamics/ANA2/tree/master/aux/dynamics).
 
@@ -11,7 +11,7 @@ As before, you can get all files used in this example [**here**](https://github.
 
 We have a Lipid Binding Protein (LBP) from a recent [**paper**](https://pubmed.ncbi.nlm.nih.gov/31365253/)
 (PDB ID: **4XCP**) bound to one of its natural ligands, palmitate (PLM). The main cavity of this LBP has
-some unusual behaviour, but we'll leave that for the [**Flexibility**](docs/flexibility.html) tutorial and just
+some unusual behaviour, but we'll leave that for the [**Flexibility**](/docs/flexibility.html) tutorial and just
 focus on tracking its volume along two 100 frames long trajectories. The two sets of 100 frames were
 collected from the same Molecular Dynamics simulation but belonging to two different conformers explored by the protein
 trajectory at different times, we'll refer to them as the High Volume (**HV**) and Low Volume (**LV**) trajectories

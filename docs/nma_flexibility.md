@@ -8,7 +8,7 @@ can't run MD or NMA, at least not locally. You can always upload your PDBs at Ba
 the first, say, 20 normal modes and their frequencies and then use ANA to calculate the cavities flexibilities.
 In this tutorial, we're going to do just that. As always, all the files are available [**online**](https://github.com/anadynamics/ANA2/tree/master/aux/bahar_dynein).
 
-We will be using the same dynein structures we used on the [previous tutorial](docs/flexibility.html), just to be sure we're not getting
+We will be using the same dynein structures we used on the [previous tutorial](/docs/flexibility.html), just to be sure we're not getting
 the wrong results.
 
 ## NMA using Bahar's server

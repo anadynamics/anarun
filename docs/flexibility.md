@@ -19,7 +19,7 @@ Since ANA is able to read vectors and frequencies from the
 [**Amber PCA file format**](https://pubs.acs.org/doi/abs/10.1021/j100384a021), we'll first check an example
 of this specific case.
  
-We continue our previous work with the Lipid Binding Proteins from the [**Flexibility**](docs/flexibility.html) tutorial. 
+We continue our previous work with the Lipid Binding Proteins from the [**Flexibility**](/docs/flexibility.html) tutorial. 
 by adding another b-sheet LBP and considering the apo and holo structures for each protein.
 We will be identifying each protein by their PDB ID: **4XCP** and **4UET** are the α-helix LBP with and without a
 ligand (palmitate), while **2IFB** and **1IFB** are the β-sheet LBP with and without the same palmitate ligand.
@@ -30,7 +30,7 @@ its ligand-free form and a β-sheet LBP?
 
 ![](assets/flexibility/lbp.png)
 
-The cavity has already been defined following the steps described in the [**Quickstart**](docs/quickstart.html)
+The cavity has already been defined following the steps described in the [**Quickstart**](/docs/quickstart.html)
 and we also set ANA to High precision (`included_area_precision = 1`), so let's
 focus on the flexibility specific options. Flexibility calculations are based on the Non-Delaunay Dynamics
 method (described [**here**](https://doi.org/10.1021/acs.jctc.7b00744)), so all their specific options begin
