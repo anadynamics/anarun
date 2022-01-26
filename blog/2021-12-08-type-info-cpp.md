@@ -42,3 +42,7 @@ target_link_libraries(sample TYPEOF)
 ```
 
 If you clone the repo you'll see how it all works.
+
+##### addendum
+
+Shortly after doing all of this, I found [nameof](https://github.com/Neargye/nameof) which does the same thing and more, and is also header-only, so it's a better solution in every aspect.
