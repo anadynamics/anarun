@@ -90,7 +90,7 @@ We can now copy the residue list and see them on pymol. Pymol needs the residue
 list to be separated with '+' characters, like this:
 
 ```
-select resi 28+29+32+33+45+46+49+54+57+58+60+61+62+72+77+80+81+84+86+90+94+98+119+122+128
+select resi 10+50+51+54+56+71+72+75+104+107+108+111+113+116
 ```
 
 ![](assets/quickstart/quickstart_3.png)
