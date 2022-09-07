@@ -124,7 +124,7 @@ RESI |  10      50      51      54      56      71      72      75      104     
 Now, let's paste this list in a new configuration file (**config_3.cfg**) to draw an Included Area.
 
 ```
-included_area_residues = 28      29      32      33      45      46      49      54      57      58      60      61      62      72      77      80      81      84      86      90      94      98      119     122     128 
+included_area_residues = 10      50      51      54      56      71      72      75      104     107     108     111     113     116
 ```
 
 and run it using the `--tool_check_CH` or `-t` flag. This will draw the convex
@@ -160,7 +160,7 @@ After pruning the list (removing several residues and adding new ones to
 get a more elongated cavity), we are left with this new config file, **config_4.cfg**:
 
 ```
-included_area_residues = 25      29      36      49      54      57      58      65      81      90      94      102      115     122     128 
+included_area_residues = 10 17 27 43 54 57 71 72 75 81 89 99 107 108 111 113 116
 included_area_precision = 1
 ```
 
