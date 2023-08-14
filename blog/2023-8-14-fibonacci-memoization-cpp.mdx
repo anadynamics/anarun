@@ -1,0 +1,138 @@
+---
+slug: templates memoization
+title: C++ template initialization is memoized
+authors: barle
+tags: [C++, c++, C, c, templates, TMP]
+---
+
+# C++ template initialization is memoized
+
+C++ has a history of solving the same problem in different ways, and sometimes the provided solutions come to replace older ones, at least partially, that are deemed less efficient, correct, and/or ergonomic. But established solutions still have a few advantages, and one of them is that people have been dealing with them and their drawbacks for longer, so in practice they may end up working better than expected. We'll review an example of such cases.
+
+Templates in C++ allow functions, classes and variables to operate with generic types and even values, with the introduction of non-type template parameters. They are the tools that allow for parametric polymorphism in C++. Since they guarantee static computation, they've also been used to pre-compute values during compilation so they're readily available at runtime.
+For this specific last application, another tool has been introduced: the ***constexpr*** keyword indicates that an expression can be evaluated at compile time. ***consteval*** takes it one step forward and restricts an expression to be computed **only** at compile-time.
+
+Why were *constexpr* and *consteval* introduced? Because templates were never designed to perform computation, but to customize behaviour. The usage of templates for computation was either impossible, or demanded the usage of complex "template meta-programming" techniques that when taken together, become a pseudo-language within the C++ language. constexpr allows compile-time computation with the same run-time syntax, plus some *constexpr* sprinkled on top. Let's see *consteval* applied on a typical example, the calculation of a Fibonacci sub-sequence.
+
+## Calculating a Fibonacci element
+
+The equations that define the Fibonacci sequence are the following:
+
+$$
+F_{n} = F_{n-1} + F_{n-2}
+$$
+$$
+F_{0} = F_{1} = 1
+$$
+
+where,
+
+- $F_{i}$: value of the element {i} from the Fibonacci sequence.
+
+Given the sub-problem structure of the problem, the calculation of an element $i$ demands the calculation of the previous elements, from $0$ to $i$. This makes the calculation of a Fibonacci element an intensive task in its naive form and a starting example when teaching Dynamic Programming.
+
+The simplest most naive implementation in C++ would be:
+```
+#include <iostream>
+
+auto fibo(int val) -> int
+{
+    if (val == 0) return 0;
+    if (val == 1) return 1;
+    return fibo(val-1) + fibo(val-2);
+}
+
+int main() {
+
+    const int val = fibo(38);
+    std:: cout << val << std::endl; 
+}
+
+```
+
+When compiled and ran with the UNIX's **time** program, these code takes this time on my machine:
+
+```
+real    0m0.312s
+user    0m0.308s
+sys     0m0.004s
+```
+
+Now, with the simple addition of a *consteval* keyword:
+
+```
+#include <iostream>
+
+consteval auto fibo(int val) -> int
+{
+    if (val == 0) return 0;
+    if (val == 1) return 1;
+    return fibo(val-1) + fibo(val-2);
+}
+
+int main() {
+
+    const int val = fibo(38);
+    std:: cout << val << std::endl; 
+}
+
+```
+
+we can bring this timing down to:
+
+```
+real    0m0.006s
+user    0m0.001s
+sys     0m0.005s
+```
+
+since the value of the Fibonacci element 38 would be precomputed by the time the program it's run. 
+The same run-time performance can be achieved with templates, though the code is a bit more contrived:
+
+```
+#include <iostream>
+
+template<int I> struct Fib
+{
+    static int const val = Fib<I-1>::val + Fib<I-2>::val;
+};
+
+template<> struct Fib<0>
+{
+    static int const val = 0;
+};
+
+template<> struct Fib<1>
+{
+    static int const val = 1;
+};
+
+int main() {
+
+    Fib<38> fibo;
+    std::cout << fibo.val << std::endl; 
+}
+
+```
+
+Using non-type template parameters, the instantiation of the `Fib<38>` structure launched the instantiation of `Fib<37>` (which demands `Fib<36>` and `Fib<35>`) and `Fib<36>` (which also demands `Fib<35>` and `Fib<34>`), and so forth. 
+This tree of computations can get very wide ($2^{37}$), so one would assume that all these instantiations take a long time, right?
+Let's time the compilation step now. The run-time and  templated versions take about the same:
+
+```
+real    0m0.344s
+user    0m0.298s
+sys     0m0.045s
+```
+
+while the *consteval* version:
+
+```
+real    0m8.089s
+user    0m7.960s
+sys     0m0.122s
+```
+
+What happened? The run-time and *consteval* versions basically do the same, but in very different environments, which makes *consteval* take a big hit in performance. It's almost instant at run-time, but it takes a while to compile. But the templated version gives the best of both worlds. It's instant in its running time and it doesn't take long to compile. Why? Well, because as the title says, the computation is memoized. The superposition of subproblems of the Fibonacci calculation allowed the template instantiation machinery to calculate each of the `Fib<i>` structs (and `.val`s) only once, by storing the template instantiations in a data structure (probably a hash-map), and then reusing them, a solution we would have to implement ourselves if we wanted to do the same at run-time; though there's probably a library that could help us, if we're feeling lazy.
+
+So, that's it. *constexpr* and *consteval* being relatively new facilities, run in a non-optimized environment, while template instantiation is the complete opposite. Does this mean we should go back to template meta-programming to perform our compile-time calculations? No. No chance. The syntax for our template solution was awful.
