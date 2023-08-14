@@ -8,7 +8,7 @@ can't run MD or NMA, at least not locally. You can always upload your PDBs at Ba
 the first, say, 20 normal modes and their frequencies and then use ANA to calculate the cavities flexibilities.
 In this tutorial, we're going to do just that. As always, all the files are available [**online**](https://github.com/anadynamics/ANA2/tree/master/aux/bahar_dynein).
 
-We will be using the same dynein structures we used on the [previous tutorial](/docs/flexibility.html), just to be sure we're not getting
+We will be using the same dynein structures we used on the [previous tutorial](/docs/flexibility), just to be sure we're not getting
 the wrong results.
 
 ## NMA using Bahar's server
@@ -76,5 +76,5 @@ Rigidity:  1.8893806879
 And we see the same difference in flexibility we saw before: TcTex1 has more flexible cavities than LC8.
 But we also notice the rigidities are much lower this time. This is because we only used 20 vectors and 20 frequencies
 instead of the whole set of collective coordinates (504 for LC8 and 576 for TcTex1),
-as we did in the [previous tutorial](flexibility.html).
+as we did in the [previous tutorial](flexibility).
 Yet, we still got the same result with the first 20 normal modes.

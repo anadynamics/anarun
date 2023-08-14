@@ -19,7 +19,7 @@ Since ANA is able to read vectors and frequencies from the
 [**Amber PCA file format**](https://pubs.acs.org/doi/abs/10.1021/j100384a021), we'll first check an example
 of this specific case.
  
-We continue our previous work with the Lipid Binding Proteins from the [**Flexibility**](/docs/flexibility.html) tutorial. 
+We continue our previous work with the Lipid Binding Proteins from the [**Flexibility**](/docs/flexibility) tutorial. 
 by adding another b-sheet LBP and considering the apo and holo structures for each protein.
 We will be identifying each protein by their PDB ID: **4XCP** and **4UET** are the α-helix LBP with and without a
 ligand (palmitate), while **2IFB** and **1IFB** are the β-sheet LBP with and without the same palmitate ligand.
@@ -30,7 +30,7 @@ its ligand-free form and a β-sheet LBP?
 
 ![](assets/flexibility/lbp.png)
 
-The cavity has already been defined following the steps described in the [**Quickstart**](/docs/quickstart.html)
+The cavity has already been defined following the steps described in the [**Quickstart**](/docs/quickstart)
 and we also set ANA to High precision (`included_area_precision = 1`), so let's
 focus on the flexibility specific options. Flexibility calculations are based on the Non-Delaunay Dynamics
 method (described [**here**](https://doi.org/10.1021/acs.jctc.7b00744)), so all their specific options begin
@@ -46,7 +46,7 @@ NDD_step = 3
 **modes_1ifb** and **modes_2ifb**). These vectors have an **x**, **y** and **z** component for each 
 particle and what "particle" means depends on the coarse grain model. In this case, we have an alpha
 carbon model, so each residue will be represented by 1 particle, we let ANA know this in the second line.
-To read more about the `NDD_particles_per_residue` option check the [**reference section**](config.html#ndd-options).
+To read more about the `NDD_particles_per_residue` option check the [**reference section**](config#ndd-options).
 
 The third line, `NDD_step = 3` tells ANA how far do we want to go with the calculation. ANA performs the
 NDD method in 3 steps:
