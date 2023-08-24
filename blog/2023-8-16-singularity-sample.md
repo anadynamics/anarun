@@ -1,5 +1,5 @@
 ---
-slug: singularity sample
+slug: singularity_sample
 title: Singularity sample file
 authors: barle
 tags: [singularity, cuda, gpu]
@@ -39,7 +39,12 @@ It prevents the system from expecting user input, which in our case would hald t
 2. `export LC_ALL=C`: so Perl doesn't complain about localization if we launch the container as a shell.
 3. We're asking `nvcc` to generate PTX and SASS for all currently supported architectures.
 
-This not only works on my computer, but also on [Leonardo](https://leonardo-supercomputer.cineca.eu/), which is a Red Hat 8.6 system:
+After saving this into the definition file `singu.def` and building it on my machine:
+```
+$ sudo singularity build singu.sif singu.def
+```
+
+I uploaded it onto [Leonardo](https://leonardo-supercomputer.cineca.eu/), which is a Red Hat 8.6 system, and ran it:
 
 ```
 (base) [pbarlett@lrdn3433 ~]$ singularity run --nv singu.sif 
@@ -55,4 +60,4 @@ Done
 INFO:    Cleaning up image...
 ```
 
-GLIBC versions between my computer (2.35) and Leonardos' (2.28) also differ, so we can only hope we don't run into any issues later on.
+GLIBC versions between my computer (2.35) and Leonardo's (2.28) also differ, so we can only hope we don't run into any issues later on.
