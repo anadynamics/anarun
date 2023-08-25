@@ -65,7 +65,12 @@ Now, the major pain point when including `mambaforge` is the activation of the e
 You can't run `source /root/.bashrc` after installing *mambaforge* since `source` is note available during the execution of `%post`.
 You can't run `conda init` or `mamba init` either, since it'll ask you to restart your shell.
 
-The solution is to run the activation script in a way any UNIX system should support, that is, using the syntax: `. script`. Then on `%environment` we get a full bash interpreter and we can source the activation script and point it to the folder where our environment resides: `source /opt/mambaforge/bin/activate /opt/mambaforge/envs/<your_environment>`
+The solution is to run the activation script in a way any UNIX system should support, that is, using the syntax: `. script`. Then on `%environment` we get a full bash interpreter and we can source the activation script and point it to the folder where our environment resides: `source /opt/mambaforge/bin/activate /opt/mambaforge/envs/<your_environment>`.
+
+Finally, we build it:
+```
+sudo singularity build locuaz.sif locuaz.def
+```
 
 ## Actually running it
 
@@ -83,7 +88,7 @@ The `/usr/local/gromacs` directory is where the GROMACS installations resides. T
 
 For example, on my machine:
 ```
-$ ldd `which gmx`
+ldd `which gmx`
         linux-vdso.so.1 (0x00007ffc8817a000)
         libgromacs.so.8 => /usr/local/gromacs/lib/libgromacs.so.8 (0x00007f74c0200000)
         libstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007f74bfe00000)
