@@ -74,7 +74,7 @@ sudo singularity build locuaz.sif locuaz.def
 
 ## Actually running it
 
-There's another obstacle when running from a container, and this is the binding of host directories. Singularity includes some host dirs by default, but if your containerized workflow needs additionl access, you'll need to include it with the [`--bind` flag](https://docs.sylabs.io/guides/3.0/user-guide/bind_paths_and_mounts.html?highlight=bind).
+There's another obstacle when running from a container, and this is the binding of host directories. Singularity includes some host dirs by default, but if your containerized workflow needs additional access, you'll need to include it with the [`--bind` flag](https://docs.sylabs.io/guides/3.0/user-guide/bind_paths_and_mounts.html?highlight=bind).
 
 In our case, it's GROMACS that needs many additional locations. This is how the singularity call command ends up looking looks on my machine:
 
