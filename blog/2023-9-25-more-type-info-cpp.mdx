@@ -1,0 +1,187 @@
+---
+slug: type-info
+title: More type information in C++
+authors: barle
+tags: [c++, cpp, templates, references]
+---
+
+## The standard way
+
+C+11 introduced the `typeid()` operator as a way to get runtime type information
+(RTTI) on an object. It returns a `std::type_info` with a `.name()` member
+function that outputs the type information as a `const char*`.
+
+Obviously, this "name" is implementation-dependent and needs proper demangling
+in order to be human-readable. This can be done through a library like
+Boost's `demangle`, but the standard library provides another solution.
+
+`std::type_index` is a `std::type_info` wrapper class whose sole function
+is to be hashed into a mapping object as a key, and associated to the
+human-readable version of the type that's inside the `std::type_info` object. 
+
+Let's see an example of this word salad:
+
+```cpp
+// type_index as the key
+std::unordered_map<std::type_index, std::string> type_names;
+ 
+// the user decides how to call each type
+type_names[std::type_index(typeid(int))] = "int";
+type_names[std::type_index(typeid(A))] = "A";
+type_names[std::type_index(typeid(B*))] = "pointer to B";
+type_names[std::type_index(typeid(A*))] = "pointer to A";
+
+int i = 1;
+A a;
+B *b;
+
+fmt::print("i is {}\n", type_names[std::type_index(typeid(i))]);
+fmt::print("a is {}\n", type_names[std::type_index(typeid(a))]);
+fmt::print("b is {}\n", type_names[std::type_index(typeid(b))]);
+fmt::print("b casted to the base class is {}\n", type_names[std::type_index(
+    typeid(dynamic_cast<A*>(b)))]);
+```
+
+This would give the following output. You can also check it on
+[godbolt](https://godbolt.org/z/EqeEnGPb9):
+```
+`i` is int
+`a` is A
+`b` is pointer to B
+`b` casted to the base class is pointer to A
+```
+
+This method bypasses demangling and assures no errors will be made when understandig
+the object types. The downside, on the other hand, is evident.
+The user has to define the type names for all classes, even the built-in ones.
+As if this was a python's `__repr__()` member function, but global and much
+more convoluted.
+
+Another issue/gotcha with the `typeid` operator is that ignores cvr (`const`,
+`volatile` and reference, `&`) qualifiers. For example:
+
+```
+std::unordered_map<std::type_index, std::string> type_names;
+
+type_names[std::type_index(typeid(int))] = "int";
+
+int i = 1;
+fmt::print("i is {}\n", type_names[std::type_index(typeid(i))]);
+
+int &ref_to_i = i;
+fmt::print("i& is not {}\n", type_names[std::type_index(typeid(ref_to_i))]);
+fmt::print("i&& is not {}\n", type_names[std::type_index(typeid(std::move(i)))]);
+
+int const const_i = i;
+fmt::print("const_i is not {}\n", type_names[std::type_index(typeid(const_i))]);
+```
+
+And the output would be:
+```
+`i` is int
+`i&` is not int
+`i&&` is not int
+`const_i` is not int
+```
+
+In this example we've only stored `typeid(int)` on our `type_names` map, yet
+all the other types matched with it.
+A more extensive example of this, can be seen on
+[this godbolt](https://godbolt.org/z/6ra6x9TPM).
+
+## Boost's way
+Boost provides the `type_index.hpp` header, with a drop-in replacement for
+`typeid()` that also solves the mangling issues, at least on the platforms
+I've tried it on.
+
+`type_id_runtime()` replaces the `typeid()` operator and instead of returning a
+`std::type_info`, it returns a `boost::typeindex::type_info` object that has a
+`.pretty_name()` member function for demangling. On the other hand, cvr
+qualifiers are still ignored.
+
+This code:
+```
+int i = 1;
+fmt::print("`i` is:  {}\n",
+            boost::typeindex::type_id_runtime(i).pretty_name());
+int &lref_to_i = i;
+fmt::print("`lref_to_i` is:  {}\n",
+            boost::typeindex::type_id_runtime(lref_to_i).pretty_name());
+fmt::print("`i` casted to a r-value reference is:  {}\n",
+            boost::typeindex::type_id_runtime(std::move(i)).pretty_name());
+```
+will give the following output:
+
+```
+`i` is:  int
+`lref_to_i` is:  int
+`i` casted to a r-value reference is:  int
+```
+
+Over on [this godbolt](https://godbolt.org/z/4cEzq55v6) you can see how well
+`pretty_name()` does with user made data types.
+
+Now, since Boost calls the equivalent of `typeid()` operator, `type_id_runtime()`,
+there must be a compile-time equivalent, right?
+
+### Types at compile time
+Boost also provides type information at compile time with `type_id<T>()` and it
+works just like `type_id_runtime()`, but instead of providing the query object
+as a function parameter, you pass it as a template parameter, not without
+wrapping it inside a `decltype()` call. This makes sure that the object's type
+is known at compile time.
+
+Here's the corresponding [godbolt example](https://godbolt.org/z/vevdnqac3):
+
+```
+int i = 1;
+fmt::print("i is:  {}\n",
+            boost::typeindex::type_id<decltype(i)>().pretty_name());
+
+int &lref_to_i = i;
+fmt::print("lref_to_i is not:  {}\n",
+            boost::typeindex::type_id<decltype(lref_to_i)>()
+                .pretty_name());
+
+fmt::print("`i` casted to an r-value reference is not:  {}\n",
+            boost::typeindex::type_id<decltype(std::move(i))>()
+                .pretty_name());
+```
+And its output:
+```
+`i` is:  int
+`lref_to_i` is not:  int
+`i` casted to an r-value reference is not:  int
+```
+
+And even better is the fact that we know have access to info on the cvr
+qualifiers, and we can get it with `type_id_with_cvr<T>()`:
+
+See the [godbolt example](https://godbolt.org/z/11coq35co):
+```
+int i = 1;
+fmt::print("i is:  {}\n",
+            boost::typeindex::type_id_with_cvr<decltype(i)>().pretty_name());
+
+int &lref_to_i = i;
+fmt::print("lref_to_i is:  {}\n",
+            boost::typeindex::type_id_with_cvr<decltype(lref_to_i)>()
+                .pretty_name());
+
+fmt::print("`i` casted to an r-value reference is:  {}\n",
+            boost::typeindex::type_id_with_cvr<decltype(std::move(i))>()
+                .pretty_name());
+```
+And its output:
+```
+`i` is:  int
+`lref_to_i` is:  int&
+`i` casted to an r-value reference is:  int&&
+```
+
+Obviously type information as a string at compile-time is not as useful as
+during runtime, but nevertheless it's at least a good learning tool.
+For example, we could use it to inspect types in godbolt, something we couldn't
+do without it, as there's no godbolt debugger (and it shouldn't be).
+
+Maybe we'll do just that in the next post.
