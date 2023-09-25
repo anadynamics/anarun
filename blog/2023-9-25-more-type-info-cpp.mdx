@@ -124,7 +124,7 @@ Over on [this godbolt](https://godbolt.org/z/4cEzq55v6) you can see how well
 Now, since Boost calls the equivalent of `typeid()` operator, `type_id_runtime()`,
 there must be a compile-time equivalent, right?
 
-### Types at compile time
+### Types at compile-time
 Boost also provides type information at compile time with `type_id<T>()` and it
 works just like `type_id_runtime()`, but instead of providing the query object
 as a function parameter, you pass it as a template parameter, not without
@@ -154,8 +154,8 @@ And its output:
 `i` casted to an r-value reference is not:  int
 ```
 
-And even better is the fact that we know have access to info on the cvr
-qualifiers, and we can get it with `type_id_with_cvr<T>()`:
+And even better is the fact that we now have access to info on the cvr
+qualifiers. We can get it with `type_id_with_cvr<T>()`:
 
 See the [godbolt example](https://godbolt.org/z/11coq35co):
 ```
@@ -179,8 +179,14 @@ And its output:
 `i` casted to an r-value reference is:  int&&
 ```
 
-Obviously type information as a string at compile-time is not as useful as
-during runtime, but nevertheless it's at least a good learning tool.
+Internally, `type_id_with_cvr<T>()` calls the `typeid()` operator from the
+standard, only after performing some template magic with the type `T` to
+determine the cvr qualifiers. Through partial template class specialization
+sprinkled with some public inheritance, one can determine if a type has cvr
+qualifiers or if it's a pointer. Perhaps that's material for another post.
+
+In the end, we know that type information as a string at compile-time is not as
+useful as during runtime, but nevertheless it's at least a good learning tool.
 For example, we could use it to inspect types in godbolt, something we couldn't
 do without it, as there's no godbolt debugger (and it shouldn't be).
 
