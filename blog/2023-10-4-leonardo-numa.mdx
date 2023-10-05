@@ -67,7 +67,7 @@ This means we have 2 NUMA regions, but you may notice that the distances between
 the nodes are not that big. That's because there's still just 1 socket, so the
 penalty for sharing memory won't be that bad.
 
-While RAM memory access is important, we also care about GPU-CPU affinity,
+While cache memory access is important, we also care about GPU-CPU affinity,
 that is, to which threads the GPUs are closer. Let's look at the next command to
 answer this::
 
